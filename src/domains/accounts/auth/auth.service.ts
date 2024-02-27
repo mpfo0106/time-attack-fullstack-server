@@ -9,7 +9,7 @@ import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import generateRandomId from 'src/utils/generateRandomId';
-import { LogInDto, SignUpDto } from './auth.dto';
+import { AuthDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
   ) {}
-  async signUp(dto: SignUpDto) {
+  async signUp(dto: AuthDto) {
     const { email, password } = dto;
     const data: Prisma.UserCreateInput = {
       id: generateRandomId(),
@@ -31,7 +31,8 @@ export class AuthService {
     const accessToken = this.generateAccessToken(user);
     return accessToken;
   }
-  async logIn(dto: LogInDto) {
+
+  async logIn(dto: AuthDto) {
     const { email, password } = dto;
     const user = await this.prismaService.user.findUnique({
       where: { email },
@@ -47,6 +48,7 @@ export class AuthService {
     const accessToken = this.generateAccessToken(user);
     return accessToken;
   }
+
   async generateAccessToken(user: Pick<User, 'id' | 'email'>) {
     const { id: subject, email } = user;
     const secretKey = this.configService.getOrThrow<string>('JWT_SECRET_KEY');
