@@ -8,11 +8,12 @@ import { DealDto } from './deals.dto';
 export class DealsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createDeal(dto: DealDto) {
+  async createDeal(dto: DealDto, authorId: Post['authorId']) {
     return await this.prismaService.post.create({
       data: {
         id: generateRandomId(),
         ...dto,
+        authorId,
       },
     });
   }
@@ -74,10 +75,17 @@ export class DealsService {
   //   });
   // }
 
-  async updateDeal(dealId: Post['id'], data: DealDto) {
+  async updateDeal(
+    dealId: Post['id'],
+    dto: DealDto,
+    authorId: Post['authorId'],
+  ) {
     const deals = await this.prismaService.post.update({
       where: { id: dealId },
-      data,
+      data: {
+        ...dto,
+        authorId,
+      },
     });
     return deals;
   }

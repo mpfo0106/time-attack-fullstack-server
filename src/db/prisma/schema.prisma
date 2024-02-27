@@ -24,13 +24,13 @@ model User {
 }
 
 model Post {
-  id       String @id
+  id       String  @id
   title    String
   content  String
-  imgUrl   String @default("")
+  imgUrl   String? @default("")
   price    Int
-  views    Int    @default(0)
-  author   User   @relation(fields: [authorId], references: [id])
+  views    Int     @default(0)
+  author   User    @relation(fields: [authorId], references: [id])
   authorId String
   region   String
 

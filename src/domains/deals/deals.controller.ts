@@ -15,7 +15,8 @@ export class DealsController {
   @Post('/deal/create')
   @Private('user')
   createDeal(@DUser() user: User, @Body() dealDto: DealDto) {
-    return this.dealsService.createDeal({ ...dealDto, authorId: user.id });
+    console.log(user);
+    return this.dealsService.createDeal(dealDto, user.id);
   }
 
   /**
@@ -75,9 +76,6 @@ export class DealsController {
     @Param('dealId') dealId: string,
     @Body() dealDto: DealDto,
   ) {
-    return this.dealsService.updateDeal(dealId, {
-      ...dealDto,
-      authorId: user.id,
-    });
+    return this.dealsService.updateDeal(dealId, dealDto, user.id);
   }
 }

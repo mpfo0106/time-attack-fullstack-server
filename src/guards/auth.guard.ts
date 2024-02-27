@@ -9,7 +9,6 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 
-import { AccountType } from 'src/domains/accounts/account.type';
 import { PrismaService } from './../db/prisma/prisma.service';
 
 @Injectable()
@@ -36,15 +35,9 @@ export class AuthGuard implements CanActivate {
 
     try {
       const secret = this.configService.getOrThrow<string>('JWT_SECRET_KEY');
-      const { sub: id, accountType: accountTypeInAccessToken } = verify(
-        accessToken,
-        secret,
-      ) as JwtPayload & { accountType: AccountType }; // 제네릭이 없어서 이렇게 타입 지정
+      const { sub: id } = verify(accessToken, secret) as JwtPayload; // 제네릭이 없어서 이렇게 타입 지정
 
       //accessToken 이 유효하다
-
-      if (accountTypeInDecorator !== accountTypeInAccessToken)
-        throw new Error(); // 파트너만 접근할 수 있는 라우트인데 유저 토큰이 들어왔을때
 
       if (accountTypeInDecorator === 'user') {
         const user = await this.prismaService.user.findUniqueOrThrow({
