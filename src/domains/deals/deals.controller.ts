@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { User } from '@prisma/client';
 import { Private } from 'src/decorators/private.decorator';
 import { DUser } from 'src/decorators/user.decorator';
@@ -15,7 +25,6 @@ export class DealsController {
   @Post('/deal/create')
   @Private('user')
   createDeal(@DUser() user: User, @Body() dealDto: DealDto) {
-    console.log(user);
     return this.dealsService.createDeal(dealDto, user.id);
   }
 
@@ -77,5 +86,15 @@ export class DealsController {
     @Body() dealDto: DealDto,
   ) {
     return this.dealsService.updateDeal(dealId, dealDto, user.id);
+  }
+
+  /**
+   * 이미지 업로드
+   */
+
+  @Post('/deals/image')
+  @UseInterceptors(FileInterceptor('image'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.dealsService.uploadFile(file);
   }
 }

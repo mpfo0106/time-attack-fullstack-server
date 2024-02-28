@@ -3,46 +3,6 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
-// @Controller('auth')
-// export class AuthController {
-//   constructor(private readonly authService: AuthService) {}
-
-//   /**
-//    * 회원가입
-//    */
-//   @Post('sign-up')
-//   async signUp(@Body() dto: AuthDto) {
-//     const accessToken = await this.authService.signUp(dto);
-//     return { accessToken };
-//   }
-
-//   /**
-//    * 로그인
-//    */
-
-//   @Post('log-in')
-//   async logIn(@Body() dto: AuthDto) {
-//     const accessToken = await this.authService.logIn(dto);
-//     return { accessToken };
-//   }
-
-//   /**
-//    * 리프레쉬 토큰
-//    */
-
-//   @Get('refresh-token')
-//   async refreshToken(
-//     @Req() request: Request,
-//     @Res({ passthrough: true }) response: Response,
-//   ) {
-//     const refreshToken = await this.authService.refreshAccessToken(
-//       request,
-//       response,
-//     );
-//     return { refreshToken };
-//   }
-// }
-
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -70,6 +30,7 @@ export class AuthController {
     const accessToken = await this.authService.logIn(dto);
     return accessToken;
   }
+
   /**
    * 로그아웃
    */
