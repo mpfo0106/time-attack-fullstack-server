@@ -67,6 +67,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { PrismaService } from 'src/db/prisma/prisma.service';
@@ -120,24 +121,19 @@ export class AuthService {
   //   // return { message: 'Logged out successfully' };
   // }
 
-  // async refreshAccessToken(user: User, response: Response) {
-  //   // const user = request.user;
-  //   if (!user) {
-  //     this.logOut(response);
-  //     return false;
-  //   }
-  //   const accessToken = await this.generateAccessToken(user);
+  refreshAccessToken(user: User) {
+    const refreshedAccessToken = this.generateAccessToken(user);
 
-  //   this.setAccessTokenCookie(response, accessToken);
-  //   return true;
-  // }
+    return refreshedAccessToken;
+  }
 
-  private generateAccessToken(user: { id: string; email: string }) {
+  generateAccessToken(user: { id: string; email: string }) {
     const secretKey = this.configService.get<string>('JWT_SECRET_KEY');
     const accessToken = sign({ email: user.email }, secretKey, {
       subject: user.id,
-      expiresIn: '2h',
+      expiresIn: '5m',
     });
+
     return accessToken;
   }
 

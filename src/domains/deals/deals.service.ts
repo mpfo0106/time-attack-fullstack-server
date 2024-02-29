@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Post, Prisma, User } from '@prisma/client';
 import { writeFile } from 'fs/promises';
 import { nanoid } from 'nanoid';
@@ -13,8 +13,7 @@ export class DealsService {
 
   async createDeal(dto: DealDto, authorId: Post['authorId']) {
     const { title, content, imgUrl, price, region } = dto;
-    console.log(dto);
-    console.log(111);
+
     return await this.prismaService.post.create({
       data: {
         title,
@@ -81,6 +80,32 @@ export class DealsService {
     return deals;
   }
 
+  async getIsMyDeal(userId: User['id'], dealId: string) {
+    const deal = await this.prismaService.post.findUnique({
+      where: { id: dealId },
+    });
+    if (deal.authorId === userId) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async updateView(dealId: Post['id']) {
+    console.log('업데이트뷰');
+    const uniqueDeal = await this.prismaService.post.findUnique({
+      where: { id: dealId },
+    });
+    if (!uniqueDeal) {
+      throw new ForbiddenException('Deal not Found');
+    }
+    const deal = await this.prismaService.post.update({
+      where: { id: dealId },
+      data: { views: { increment: 1 } },
+    });
+    return deal;
+  }
+
   // async getDealsByLikes() {
   //   const deals = await this.prismaService.post.findMany({
   //     include:{
@@ -105,6 +130,19 @@ export class DealsService {
       },
     });
     return deals;
+  }
+
+  async deleteDeal(dealId: Post['id'], authorId: Post['authorId']) {
+    const myDeal = await this.prismaService.post.findUnique({
+      where: { id: dealId },
+    });
+    if (myDeal.authorId !== authorId)
+      throw new ForbiddenException('not correct user');
+
+    const deal = await this.prismaService.post.delete({
+      where: { id: dealId },
+    });
+    return deal;
   }
 
   async uploadFile(file: Express.Multer.File) {

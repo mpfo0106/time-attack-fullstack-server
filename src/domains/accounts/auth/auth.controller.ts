@@ -1,5 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 
+import { User } from '@prisma/client';
+import { Private } from 'src/decorators/private.decorator';
+import { DUser } from 'src/decorators/user.decorator';
 import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -38,16 +41,15 @@ export class AuthController {
   // async logOut(@Res({ passthrough: true }) response: Response) {
   //   return this.authService.logOut(response);
   // }
+
   /**
    * 리프레쉬 토큰
    */
-  // @Get('refresh-token')
-  // @Private('user')
-  // async refreshToken(
-  //   @Req() request: Request,
-  //   @DUser() user: User,
-  //   @Res({ passthrough: true }) response: Response,
-  // ) {
-  //   await this.authService.refreshAccessToken(user, response);
-  // }
+  @Get('refresh-token')
+  @Private('user')
+  async refreshToken(@DUser() user: User) {
+    const accessToken = await this.authService.refreshAccessToken(user);
+
+    return accessToken;
+  }
 }

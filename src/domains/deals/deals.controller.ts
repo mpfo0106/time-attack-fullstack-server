@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -32,19 +33,33 @@ export class DealsController {
    * 판매글 상세페이지
    */
 
-  @Get('deals/:dealId')
+  @Get('deal/:dealId')
   getDetailDeal(@Param('dealId') dealId: string) {
-    return this.dealsService.getDetailDeal(dealId);
+    console.log(111);
+    const deal = this.dealsService.getDetailDeal(dealId);
+    this.dealsService.updateView(dealId);
+    return deal;
   }
 
   /**
    * 내가 쓴 글
    */
 
-  @Get('/my/deals/written')
+  @Get('my/deals/written')
   @Private('user')
   getMyWrote(@DUser() user: User) {
     return this.dealsService.getMyWrote(user.id);
+  }
+
+  /**
+   * 내 글인지 확인
+   */
+
+  @Get('my/deals/:dealId')
+  @Private('user')
+  getIsMyDeal(@DUser() user: User, @Param('dealId') dealId: string) {
+    const isMyDeal = this.dealsService.getIsMyDeal(user.id, dealId);
+    return isMyDeal;
   }
 
   /**
@@ -86,6 +101,16 @@ export class DealsController {
     @Body() dealDto: DealDto,
   ) {
     return this.dealsService.updateDeal(dealId, dealDto, user.id);
+  }
+
+  /**
+   * 판매글 삭제
+   */
+
+  @Delete('/deals/:dealId/delete')
+  @Private('user')
+  deleteDeal(@DUser() user: User, @Param('dealId') dealId: string) {
+    return this.dealsService.deleteDeal(dealId, user.id);
   }
 
   /**
