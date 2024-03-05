@@ -154,7 +154,7 @@ export class DealsService {
     const path = join(basePath, fileName);
     try {
       await writeFile(path, file.buffer);
-      return `http://localhost:5050/images/${fileName}`;
+      return `https://port-0-time-attack-fullstack-server-am952nltdolac9.sel5.cloudtype.app/images/${fileName}`;
     } catch (e) {
       throw new Error('Failed to upload image');
     }
